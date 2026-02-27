@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../Hypesoft.Application/Hypesoft.Application.csproj" Id="87a640ba-a955-40a4-824c-41bad8785899" />
+  <Project Path="Hypesoft.Domain.csproj" />
+</Solution>
