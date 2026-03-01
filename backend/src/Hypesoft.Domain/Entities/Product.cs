@@ -3,8 +3,8 @@ namespace Hypesoft.Domain.Entities;
 public class Product
 {
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public string Description { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
     public decimal Price { get; private set; }
     public Guid CategoryId { get; private set; }
     public int StockQuantity { get; private set; }
@@ -13,7 +13,7 @@ public class Product
 
     public ProductStatus Status => CalculateStatus();
 
-    private Product() { } // para ORM
+    private Product() { }
 
     public Product(
         string name,
