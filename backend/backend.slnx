@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="Hypesoft.API/Hypesoft.API.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/Hypesoft.API/Hypesoft.API.csproj" />
+    <Project Path="src/Hypesoft.Application/Hypesoft.Application.csproj" />
+    <Project Path="src/Hypesoft.Domain/Hypesoft.Domain.csproj" />
+    <Project Path="src/Hypesoft.Infrastructure/Hypesoft.Infrastructure.csproj" />
+  </Folder>
 </Solution>
