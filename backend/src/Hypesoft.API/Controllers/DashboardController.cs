@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Hypesoft.Application.Dashboard.Queries.GetDashboardStats;
 
@@ -6,6 +7,7 @@ namespace Hypesoft.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "User")]
 public class DashboardController : ControllerBase
 {
     private readonly IMediator _mediator;
