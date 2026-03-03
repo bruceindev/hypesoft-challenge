@@ -1,91 +1,132 @@
+using Hypesoft.Domain.Common;
+using Hypesoft.Domain.Events;
+using Hypesoft.Domain.ValueObjects;
+
 namespace Hypesoft.Domain.Entities;
 
-public class Product
+public sealed class Product : AggregateRoot
 {
-    public Guid Id { get; private set; }
-    public string Name { get; private set; } = string.Empty;
-    public string Description { get; private set; } = string.Empty;
-    public decimal Price { get; private set; }
-    public Guid CategoryId { get; private set; }
-    public int StockQuantity { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-
-    public ProductStatus Status => CalculateStatus();
+    public string Name { get; private set; } = null!;
+    public string Description { get; private set; } = null!;
+    public Price Price { get; private set; } = null!;
+    public StockQuantity StockQuantity { get; private set; } = null!;
+    public string CategoryId { get; private set; } = null!;
+    public string? ImageUrl { get; private set; }
+    public bool IsActive { get; private set; }
 
     private Product() { }
 
-    public Product(
+    private Product(
         string name,
         string description,
-        decimal price,
-        Guid categoryId,
-        int stockQuantity)
+        Price price,
+        StockQuantity stockQuantity,
+        string categoryId,
+        string? imageUrl = null)
     {
-        Validate(name, price, stockQuantity, categoryId);
-
-        Id = Guid.NewGuid();
         Name = name;
         Description = description;
         Price = price;
-        CategoryId = categoryId;
         StockQuantity = stockQuantity;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
+        CategoryId = categoryId;
+        ImageUrl = imageUrl;
+        IsActive = true;
     }
 
-    public void UpdateDetails(string name, string description, decimal price)
-    {
-        ValidateName(name);
-        ValidatePrice(price);
-
-        Name = name;
-        Description = description;
-        Price = price;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateStock(int quantity)
-    {
-        if (quantity < 0)
-            throw new ArgumentException("Stock cannot be negative.");
-
-        StockQuantity = quantity;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    private ProductStatus CalculateStatus()
-    {
-        if (StockQuantity == 0)
-            return ProductStatus.OutOfStock;
-
-        if (StockQuantity < 10)
-            return ProductStatus.LowStock;
-
-        return ProductStatus.Active;
-    }
-
-    private void Validate(string name, decimal price, int stock, Guid categoryId)
-    {
-        ValidateName(name);
-        ValidatePrice(price);
-
-        if (stock < 0)
-            throw new ArgumentException("Stock cannot be negative.");
-
-        if (categoryId == Guid.Empty)
-            throw new ArgumentException("Category is required.");
-    }
-
-    private void ValidateName(string name)
+    public static Product Create(
+        string name,
+        string description,
+        decimal priceAmount,
+        int stockQuantity,
+        string categoryId,
+        string? imageUrl = null)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Product name is required.");
+            throw new ArgumentException("Product name is required", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentException("Product description is required", nameof(description));
+
+        if (string.IsNullOrWhiteSpace(categoryId))
+            throw new ArgumentException("Category is required", nameof(categoryId));
+
+        var price = Price.Create(priceAmount);
+        var stock = StockQuantity.Create(stockQuantity);
+
+        var product = new Product(name, description, price, stock, categoryId, imageUrl);
+
+        if (stock.IsLowStock())
+        {
+            product.AddDomainEvent(new LowStockDetectedEvent(product.Id, product.Name, stock.Value));
+        }
+
+        return product;
     }
 
-    private void ValidatePrice(decimal price)
+    public void Update(
+        string name,
+        string description,
+        decimal priceAmount,
+        string categoryId,
+        string? imageUrl = null)
     {
-        if (price <= 0)
-            throw new ArgumentException("Price must be greater than zero.");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Product name is required", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentException("Product description is required", nameof(description));
+
+        if (string.IsNullOrWhiteSpace(categoryId))
+            throw new ArgumentException("Category is required", nameof(categoryId));
+
+        Name = name;
+        Description = description;
+        Price = Price.Create(priceAmount);
+        CategoryId = categoryId;
+        ImageUrl = imageUrl;
+        SetUpdatedAt();
+    }
+
+    public void UpdateStock(int newQuantity)
+    {
+        var previousStock = StockQuantity;
+        StockQuantity = StockQuantity.Create(newQuantity);
+
+        if (StockQuantity.IsLowStock() && !previousStock.IsLowStock())
+        {
+            AddDomainEvent(new LowStockDetectedEvent(Id, Name, StockQuantity.Value));
+        }
+
+        SetUpdatedAt();
+    }
+
+    public void IncreaseStock(int amount)
+    {
+        StockQuantity = StockQuantity.Increase(amount);
+        SetUpdatedAt();
+    }
+
+    public void DecreaseStock(int amount)
+    {
+        StockQuantity = StockQuantity.Decrease(amount);
+
+        if (StockQuantity.IsLowStock())
+        {
+            AddDomainEvent(new LowStockDetectedEvent(Id, Name, StockQuantity.Value));
+        }
+
+        SetUpdatedAt();
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
+        SetUpdatedAt();
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+        SetUpdatedAt();
     }
 }
