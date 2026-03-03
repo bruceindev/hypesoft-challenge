@@ -2,9 +2,9 @@
 
 Projeto completo de gestão de produtos com frontend React + backend .NET 9, autenticação via Keycloak e stack containerizada.
 
-Sem enrolação: você clona, sobe com Docker e já consegue testar tudo.
+Sem enrolação: clona, sobe com docker e já testa :)
 
-## 🚀 Como rodar (jeito mais rápido)
+## 🥑 Como rodar (jeito mais tranquilo)
 
 ### Pré-requisitos
 - Docker Desktop
@@ -12,7 +12,7 @@ Sem enrolação: você clona, sobe com Docker e já consegue testar tudo.
 
 ### 1) Clonar o repositório
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone <https://github.com/bruceindev/hypesoft-challenge.git>
 cd desafio-1
 ```
 
@@ -141,9 +141,8 @@ powershell -ExecutionPolicy Bypass -File .\validate-enterprise.ps1
 - Documentação de decisões arquiteturais: ✅
 
 ## 🧩 Observação sobre dados de exemplo
-- Usuários e roles já vêm prontos via import do Keycloak.
+- Usuários e roles já vêm prontos via import do Keycloak (dá uns créditos hahah).
 - Produtos e categorias podem ser criados direto pela interface após login.
 
 ---
 
-Se quiser validar como avaliador (modo “clean machine”): clone → `docker compose up -d --build` → login → CRUD + dashboard + swagger.
