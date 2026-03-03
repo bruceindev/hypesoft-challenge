@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Hypesoft.Application.Categories.Commands.CreateCategory;
 using Hypesoft.Application.Categories.Commands.UpdateCategory;
@@ -10,6 +11,7 @@ namespace Hypesoft.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "User")]
 public class CategoriesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -20,6 +22,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Manager")]
     public async Task<IActionResult> CreateCategory(
         [FromBody] CreateCategoryCommand command,
         CancellationToken cancellationToken)
@@ -38,7 +41,7 @@ public class CategoriesController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(
-        Guid id,
+        string id,
         CancellationToken cancellationToken)
     {
         var query = new GetCategoryByIdQuery { Id = id };
@@ -47,8 +50,9 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Policy = "Manager")]
     public async Task<IActionResult> UpdateCategory(
-        Guid id,
+        string id,
         [FromBody] UpdateCategoryCommand command,
         CancellationToken cancellationToken)
     {
@@ -58,8 +62,9 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteCategory(
-        Guid id,
+        string id,
         CancellationToken cancellationToken)
     {
         var command = new DeleteCategoryCommand { Id = id };

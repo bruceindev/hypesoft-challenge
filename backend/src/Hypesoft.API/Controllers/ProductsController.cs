@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Hypesoft.Application.Products.Commands.CreateProduct;
 using Hypesoft.Application.Products.Commands.UpdateProduct;
@@ -14,6 +15,7 @@ namespace Hypesoft.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "User")]
 public class ProductsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -24,6 +26,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Manager")]
     public async Task<IActionResult> CreateProduct(
         [FromBody] CreateProductCommand command,
         CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ public class ProductsController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] string? searchTerm = null,
-        [FromQuery] Guid? categoryId = null,
+        [FromQuery] string? categoryId = null,
         CancellationToken cancellationToken = default)
     {
         var query = new GetProductsQuery
@@ -54,7 +57,7 @@ public class ProductsController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(
-        Guid id,
+        string id,
         CancellationToken cancellationToken)
     {
         var query = new GetProductByIdQuery { Id = id };
@@ -63,8 +66,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Policy = "Manager")]
     public async Task<IActionResult> UpdateProduct(
-        Guid id,
+        string id,
         [FromBody] UpdateProductCommand command,
         CancellationToken cancellationToken)
     {
@@ -74,8 +78,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteProduct(
-        Guid id,
+        string id,
         CancellationToken cancellationToken)
     {
         var command = new DeleteProductCommand { Id = id };
@@ -84,8 +89,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPatch("{id}/stock")]
+    [Authorize(Policy = "Manager")]
     public async Task<IActionResult> UpdateProductStock(
-        Guid id,
+        string id,
         [FromBody] UpdateProductStockCommand command,
         CancellationToken cancellationToken)
     {
