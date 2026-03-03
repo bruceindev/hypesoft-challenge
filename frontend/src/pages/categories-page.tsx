@@ -13,6 +13,7 @@ import type { Category } from "@/types/category";
 
 export default function CategoriesPage() {
   const auth = useAuth();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const { data = [], isLoading } = useCategories();
   const { createMutation, updateMutation, deleteMutation } = useCategoryMutations();
@@ -22,23 +23,15 @@ export default function CategoriesPage() {
   return (
     <>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Categorias</CardTitle>
+          {canManage && (
+            <Button onClick={() => setIsCreateOpen(true)}>
+              Nova Categoria
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
-        {canManage && (
-          <CategoryForm
-            isLoading={createMutation.isPending}
-            submitLabel="Adicionar"
-            onSubmit={(values) => {
-              createMutation.mutate(values, {
-                onSuccess: () => notifySuccess("Categoria criada"),
-                onError: () => notifyError("Erro ao criar categoria"),
-              });
-            }}
-          />
-        )}
-
         {isLoading ? (
           <div className="space-y-3">
             <Skeleton className="h-10 w-full rounded-lg" />
@@ -75,6 +68,30 @@ export default function CategoriesPage() {
         )}
         </CardContent>
       </Card>
+
+      <Dialog open={isCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nova Categoria</DialogTitle>
+          </DialogHeader>
+          <CategoryForm
+            isLoading={createMutation.isPending}
+            submitLabel="Adicionar"
+            onSubmit={(values) => {
+              createMutation.mutate(values, {
+                onSuccess: () => {
+                  notifySuccess("Categoria criada");
+                  setIsCreateOpen(false);
+                },
+                onError: () => notifyError("Erro ao criar categoria"),
+              });
+            }}
+          />
+          <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+            Fechar
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={editingCategory !== null}>
         <DialogContent>

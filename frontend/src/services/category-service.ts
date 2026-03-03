@@ -23,16 +23,19 @@ export const categoryService = {
     return data.map(toCategoryModel);
   },
 
-  async create(input: Pick<Category, "name" | "description">): Promise<string> {
-    const { data } = await apiClient.post<CategoryApiDto>("/categories", input);
+  async create(input: { name: string; description?: string }): Promise<string> {
+    const { data } = await apiClient.post<CategoryApiDto>("/categories", {
+      name: input.name,
+      description: input.description ?? "",
+    });
     return data.id;
   },
 
-  async update(id: string, input: Pick<Category, "name" | "description">): Promise<void> {
+  async update(id: string, input: { name: string; description?: string }): Promise<void> {
     await apiClient.put(`/categories/${id}`, {
       id,
       name: input.name,
-      description: input.description,
+      description: input.description ?? "",
     });
   },
 

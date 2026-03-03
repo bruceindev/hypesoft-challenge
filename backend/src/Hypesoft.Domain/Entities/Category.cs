@@ -22,10 +22,7 @@ public sealed class Category : AggregateRoot
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Category name is required", nameof(name));
 
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Category description is required", nameof(description));
-
-        return new Category(name, description);
+        return new Category(name, description ?? string.Empty);
     }
 
     public void Update(string name, string description)
@@ -33,11 +30,8 @@ public sealed class Category : AggregateRoot
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Category name is required", nameof(name));
 
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Category description is required", nameof(description));
-
         Name = name;
-        Description = description;
+        Description = description ?? string.Empty;
         SetUpdatedAt();
     }
 

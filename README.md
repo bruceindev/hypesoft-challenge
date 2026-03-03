@@ -9,6 +9,37 @@ A solução Hypesoft é uma plataforma de e-commerce com frontend React/Vite e b
 - Segurança enterprise (RBAC, rate limiting, security headers, health checks dependentes).
 - Operação local e CI/CD simplificadas com Docker Compose.
 
+## Status Final (Reta Final)
+
+### Como rodar do zero (qualquer máquina)
+1. Clone o repositório.
+2. Na raiz, execute:
+  ```powershell
+  docker compose up -d --build
+  ```
+3. Acesse:
+  - Frontend (via Nginx): `http://localhost:3000`
+  - Backend API: `http://localhost:5000`
+  - Health backend: `http://localhost:5000/health`
+  - Keycloak: `http://localhost:8080`
+
+### Credenciais Keycloak (realm importado automaticamente)
+- `admin / admin123`
+- `manager / manager123`
+- `user / user123`
+
+### Funcionalidades principais implementadas
+- Produtos: CRUD completo, busca por nome, filtro por categoria, edição e atualização de estoque.
+- Categorias: CRUD completo com formulário visual de criação/edição.
+- Dashboard: total de produtos, valor total do estoque, lista de baixo estoque e gráfico por categoria.
+- Autenticação: login Keycloak, proteção de rotas, autorização por role e logout.
+
+### Critérios obrigatórios atendidos
+- Clean Architecture + DDD + CQRS organizados.
+- Testes automatizados backend/frontend.
+- Cache Redis configurado.
+- Docker Compose completo com frontend, backend, mongo, keycloak, redis e nginx.
+
 ---
 
 ## 2) Arquitetura (Clean Architecture + CQRS + DDD)
@@ -105,7 +136,7 @@ EF Core 9 + Repositórios]
 - Suporta RBAC por políticas (`Admin`, `Manager`, `User`) com auditoria e governança.
 
 ### Docker Compose
-- Orquestra stack completa (frontend, backend, MongoDB, Redis, Keycloak) com bootstrap rápido.
+- Orquestra stack completa (frontend, backend, MongoDB, Redis, Keycloak, Nginx) com bootstrap rápido.
 - Uniformiza ambiente de desenvolvimento/validação e reduz diferença entre máquinas.
 
 ---

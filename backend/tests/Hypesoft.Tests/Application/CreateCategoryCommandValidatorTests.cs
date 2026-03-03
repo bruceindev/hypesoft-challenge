@@ -17,12 +17,12 @@ public class CreateCategoryCommandValidatorTests
     }
 
     [Fact]
-    public void Should_Have_Error_When_Description_Is_Empty()
+    public void Should_Not_Have_Error_When_Description_Is_Empty()
     {
         var command = new CreateCategoryCommand { Name = "Eletrônicos", Description = "" };
         var result = _validator.TestValidate(command);
 
-        result.ShouldHaveValidationErrorFor(value => value.Description);
+        result.ShouldNotHaveValidationErrorFor(value => value.Description);
     }
 
     [Fact]

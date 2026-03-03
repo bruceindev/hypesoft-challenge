@@ -10,7 +10,7 @@ export const productSchema = z.object({
 
 export const categorySchema = z.object({
   name: z.string().min(2, "Nome obrigatório").max(100, "Máximo 100 caracteres"),
-  description: z.string().min(5, "Descrição obrigatória").max(500, "Máximo 500 caracteres"),
+  description: z.string().max(500, "Máximo 500 caracteres").optional(),
 });
 
 export const stockSchema = z.object({
