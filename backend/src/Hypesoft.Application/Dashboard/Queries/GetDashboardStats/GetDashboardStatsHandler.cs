@@ -6,21 +6,32 @@ namespace Hypesoft.Application.Dashboard.Queries.GetDashboardStats;
 
 public class GetDashboardStatsHandler : IRequestHandler<GetDashboardStatsQuery, DashboardStatsDto>
 {
+    private const string DashboardCacheKey = "dashboard:stats";
+
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ICacheService _cacheService;
 
     public GetDashboardStatsHandler(
         IProductRepository productRepository,
-        ICategoryRepository categoryRepository)
+        ICategoryRepository categoryRepository,
+        ICacheService cacheService)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<DashboardStatsDto> Handle(
         GetDashboardStatsQuery request,
         CancellationToken cancellationToken)
     {
+        var cachedDashboard = await _cacheService.GetAsync<DashboardStatsDto>(DashboardCacheKey, cancellationToken);
+        if (cachedDashboard != null)
+        {
+            return cachedDashboard;
+        }
+
         var allProducts = await _productRepository.GetAllAsync(cancellationToken);
         var allCategories = await _categoryRepository.GetAllAsync(cancellationToken);
         var lowStockProducts = await _productRepository.GetLowStockProductsAsync(StockQuantity.LowStockThreshold, cancellationToken);
@@ -51,7 +62,7 @@ public class GetDashboardStatsHandler : IRequestHandler<GetDashboardStatsQuery, 
             })
             .ToList();
 
-        return new DashboardStatsDto
+        var result = new DashboardStatsDto
         {
             TotalProducts = totalProducts,
             TotalStockValue = totalStockValue,
@@ -59,5 +70,9 @@ public class GetDashboardStatsHandler : IRequestHandler<GetDashboardStatsQuery, 
             LowStockProducts = lowStockItems,
             ProductsByCategory = productsByCategory
         };
+
+        await _cacheService.SetAsync(DashboardCacheKey, result, TimeSpan.FromMinutes(2), cancellationToken);
+
+        return result;
     }
 }

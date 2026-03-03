@@ -6,10 +6,12 @@ namespace Hypesoft.Application.Categories.Commands.DeleteCategory;
 public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Unit>
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ICacheService _cacheService;
 
-    public DeleteCategoryHandler(ICategoryRepository categoryRepository)
+    public DeleteCategoryHandler(ICategoryRepository categoryRepository, ICacheService cacheService)
     {
         _categoryRepository = categoryRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<Unit> Handle(
@@ -22,6 +24,8 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Unit
             throw new KeyNotFoundException($"Category with ID {request.Id} not found");
 
         await _categoryRepository.DeleteAsync(request.Id, cancellationToken);
+        await _cacheService.RemoveAsync("categories:list", cancellationToken);
+        await _cacheService.RemoveAsync("dashboard:stats", cancellationToken);
 
         return Unit.Value;
     }

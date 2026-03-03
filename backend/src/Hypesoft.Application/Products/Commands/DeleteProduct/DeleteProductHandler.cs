@@ -6,10 +6,12 @@ namespace Hypesoft.Application.Products.Commands.DeleteProduct;
 public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Unit>
 {
     private readonly IProductRepository _productRepository;
+    private readonly ICacheService _cacheService;
 
-    public DeleteProductHandler(IProductRepository productRepository)
+    public DeleteProductHandler(IProductRepository productRepository, ICacheService cacheService)
     {
         _productRepository = productRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<Unit> Handle(
@@ -21,6 +23,8 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Unit>
             throw new KeyNotFoundException($"Product with ID {request.Id} not found");
 
         await _productRepository.DeleteAsync(request.Id, cancellationToken);
+        await _cacheService.RemoveAsync("dashboard:stats", cancellationToken);
+        await _cacheService.RemoveAsync("categories:list", cancellationToken);
 
         return Unit.Value;
     }

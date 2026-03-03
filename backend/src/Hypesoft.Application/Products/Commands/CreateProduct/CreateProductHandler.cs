@@ -10,15 +10,18 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Produc
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ICacheService _cacheService;
     private readonly IMapper _mapper;
 
     public CreateProductHandler(
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
+        ICacheService cacheService,
         IMapper mapper)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
+        _cacheService = cacheService;
         _mapper = mapper;
     }
 
@@ -39,6 +42,8 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Produc
             request.ImageUrl);
 
         await _productRepository.AddAsync(product, cancellationToken);
+        await _cacheService.RemoveAsync("dashboard:stats", cancellationToken);
+        await _cacheService.RemoveAsync("categories:list", cancellationToken);
 
         return _mapper.Map<ProductResponseDto>(product);
     }

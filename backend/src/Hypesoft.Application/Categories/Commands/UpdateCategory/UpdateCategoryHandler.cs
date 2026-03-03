@@ -8,11 +8,13 @@ namespace Hypesoft.Application.Categories.Commands.UpdateCategory;
 public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, CategoryResponseDto>
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ICacheService _cacheService;
     private readonly IMapper _mapper;
 
-    public UpdateCategoryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+    public UpdateCategoryHandler(ICategoryRepository categoryRepository, ICacheService cacheService, IMapper mapper)
     {
         _categoryRepository = categoryRepository;
+        _cacheService = cacheService;
         _mapper = mapper;
     }
 
@@ -27,6 +29,8 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Cate
 
         category.Update(request.Name, request.Description);
         await _categoryRepository.UpdateAsync(category, cancellationToken);
+        await _cacheService.RemoveAsync("categories:list", cancellationToken);
+        await _cacheService.RemoveAsync("dashboard:stats", cancellationToken);
 
         return _mapper.Map<CategoryResponseDto>(category);
     }
