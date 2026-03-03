@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Box,
+  FolderTree,
   ChartNoAxesCombined,
   HelpCircle,
   Home,
@@ -46,6 +47,7 @@ const navSections: NavSection[] = [
     items: [
       { label: "My Shop", icon: ShoppingBag, to: "#" },
       { label: "Products", icon: Box, to: APP_ROUTES.products },
+      { label: "Categories", icon: FolderTree, to: APP_ROUTES.categories },
       { label: "Customers", icon: Users, to: "#" },
       { label: "Invoice", icon: FileText, to: "#" },
       { label: "Message", icon: MessageCircle, to: "#", badge: "4" },

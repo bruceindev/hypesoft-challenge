@@ -12,10 +12,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const parseRoles = (tokenParsed: Record<string, unknown> | undefined): UserRole[] => {
   const resourceAccess = tokenParsed?.resource_access as { [key: string]: { roles?: string[] } } | undefined;
+  const realmAccess = tokenParsed?.realm_access as { roles?: string[] } | undefined;
   const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || "hypesoft-frontend";
-  const roles = resourceAccess?.[clientId]?.roles ?? [];
+  const clientRoles = resourceAccess?.[clientId]?.roles ?? [];
+  const realmRoles = realmAccess?.roles ?? [];
+  const roles = [...clientRoles, ...realmRoles];
 
-  return roles
+  return Array.from(new Set(roles))
     .map((role) => role.toLowerCase())
     .filter((role) => ["admin", "manager", "user"].includes(role))
     .map((role) => role.charAt(0).toUpperCase() + role.slice(1) as UserRole);
