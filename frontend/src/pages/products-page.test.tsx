@@ -25,6 +25,10 @@ vi.mock("@/hooks/use-products", () => ({
   }),
 }));
 
+vi.mock("@/components/forms/stock-update-form", () => ({
+  StockUpdateForm: () => null,
+}));
+
 const products: Product[] = [
   {
     id: "prod-1",
