@@ -13,7 +13,7 @@ Sem enrolação: clona, sobe com docker e já testa :)
 ### 1) Clonar o repositório
 ```bash
 git clone https://github.com/bruceindev/hypesoft-challenge.git
-cd desafio-1
+cd hypesoft-challenge
 ```
 
 ### 2) Subir a stack
