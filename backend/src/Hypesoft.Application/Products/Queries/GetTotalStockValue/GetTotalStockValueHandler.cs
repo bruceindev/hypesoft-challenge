@@ -16,6 +16,7 @@ public class GetTotalStockValueHandler : IRequestHandler<GetTotalStockValueQuery
         GetTotalStockValueQuery request,
         CancellationToken cancellationToken)
     {
-        return await _productRepository.GetTotalStockValueAsync(cancellationToken);
+        var products = await _productRepository.GetAllAsync(cancellationToken);
+        return products.Sum(p => p.Price.Amount * p.StockQuantity.Value);
     }
 }

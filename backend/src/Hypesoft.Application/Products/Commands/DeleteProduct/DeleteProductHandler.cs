@@ -17,9 +17,8 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Unit>
         CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
-
         if (product == null)
-            throw new KeyNotFoundException($"Product with ID {request.Id} not found.");
+            throw new KeyNotFoundException($"Product with ID {request.Id} not found");
 
         await _productRepository.DeleteAsync(request.Id, cancellationToken);
 

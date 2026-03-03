@@ -19,12 +19,7 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Unit
         var category = await _categoryRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (category == null)
-            throw new KeyNotFoundException($"Category with ID {request.Id} not found.");
-
-        var hasProducts = await _categoryRepository.HasProductsAsync(request.Id, cancellationToken);
-
-        if (hasProducts)
-            throw new InvalidOperationException("Cannot delete category with associated products.");
+            throw new KeyNotFoundException($"Category with ID {request.Id} not found");
 
         await _categoryRepository.DeleteAsync(request.Id, cancellationToken);
 

@@ -16,6 +16,6 @@ public class GetTotalProductsCountHandler : IRequestHandler<GetTotalProductsCoun
         GetTotalProductsCountQuery request,
         CancellationToken cancellationToken)
     {
-        return await _productRepository.CountAsync(null, null, cancellationToken);
+        return await _productRepository.GetTotalCountAsync(cancellationToken);
     }
 }

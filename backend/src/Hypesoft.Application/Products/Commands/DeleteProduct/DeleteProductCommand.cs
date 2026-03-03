@@ -4,5 +4,5 @@ namespace Hypesoft.Application.Products.Commands.DeleteProduct;
 
 public class DeleteProductCommand : IRequest<Unit>
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 }

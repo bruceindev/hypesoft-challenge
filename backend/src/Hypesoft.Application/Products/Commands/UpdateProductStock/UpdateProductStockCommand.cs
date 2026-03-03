@@ -5,6 +5,6 @@ namespace Hypesoft.Application.Products.Commands.UpdateProductStock;
 
 public class UpdateProductStockCommand : IRequest<ProductResponseDto>
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public int StockQuantity { get; set; }
 }

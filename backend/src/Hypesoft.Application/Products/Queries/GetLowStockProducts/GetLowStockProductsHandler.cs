@@ -1,26 +1,26 @@
+using AutoMapper;
 using MediatR;
 using Hypesoft.Application.Products.DTOs;
 using Hypesoft.Domain.Interfaces;
 
 namespace Hypesoft.Application.Products.Queries.GetLowStockProducts;
 
-public class GetLowStockProductsHandler : IRequestHandler<GetLowStockProductsQuery, IReadOnlyList<ProductResponseDto>>
+public class GetLowStockProductsHandler : IRequestHandler<GetLowStockProductsQuery, List<ProductResponseDto>>
 {
     private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;
 
-    public GetLowStockProductsHandler(IProductRepository productRepository)
+    public GetLowStockProductsHandler(IProductRepository productRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _mapper = mapper;
     }
 
-    public async Task<IReadOnlyList<ProductResponseDto>> Handle(
+    public async Task<List<ProductResponseDto>> Handle(
         GetLowStockProductsQuery request,
         CancellationToken cancellationToken)
     {
-        var products = await _productRepository.GetLowStockAsync(request.Threshold, cancellationToken);
-
-        return products
-            .Select(ProductResponseDto.FromEntity)
-            .ToList();
+        var products = await _productRepository.GetLowStockProductsAsync(request.Threshold, cancellationToken);
+        return _mapper.Map<List<ProductResponseDto>>(products.ToList());
     }
 }
